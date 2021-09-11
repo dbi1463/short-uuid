@@ -55,7 +55,7 @@ private fun assertCharactersSize(characters: String): Int {
     if (!exponent.isInteger()) {
         throw IllegalArgumentException("must have 2 ^ n characters")
     }
-    if (exponent < 4) {
+    if (exponent <= 4) {
         throw IllegalArgumentException("less than 16 characters")
     }
     return exponent.toInt()
