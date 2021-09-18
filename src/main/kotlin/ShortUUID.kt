@@ -19,22 +19,29 @@ fun UUID.shortId(characters: String = defaultCharacters): String {
     return buffer.toString().reversed()
 }
 
-fun String.fromShortId(characters: String = defaultCharacters): UUID {
-    val exponent = assertCharactersSize(characters)
-    if (this.length != ceil((Long.SIZE_BITS * 2).toDouble() / exponent).toInt()) {
-        throw IllegalArgumentException("the string could not be represented with the characters")
+class ShortUUID {
+
+    companion object {
+
+        @JvmStatic
+        fun from(shortId: String, characters: String = defaultCharacters): UUID {
+            val exponent = assertCharactersSize(characters)
+            if (shortId.length != ceil((Long.SIZE_BITS * 2).toDouble() / exponent).toInt()) {
+                throw IllegalArgumentException("the string could not be represented with the characters")
+            }
+            val base = 2.toDouble().pow(exponent).toInt().toBigInteger()
+            var number = BigInteger.valueOf(0)
+            shortId.forEach { char ->
+                val index = characters.indexOf(char).toBigInteger()
+                number = number.times(base).add(index)
+            }
+            val bytes = number.toByteArray()
+            val length = Long.SIZE_BYTES * 2
+            val offset = if (bytes.size > length) (bytes.size - length) else 0
+            val buffer = ByteBuffer.wrap(bytes, offset, length)
+            return UUID(buffer.long, buffer.long)
+        }
     }
-    val base = 2.toDouble().pow(exponent).toInt().toBigInteger()
-    var number = BigInteger.valueOf(0)
-    this.forEach { char ->
-        val index = characters.indexOf(char).toBigInteger()
-        number = number.times(base).add(index)
-    }
-    val bytes = number.toByteArray()
-    val length = Long.SIZE_BYTES * 2
-    val offset = if (bytes.size > length) (bytes.size - length) else 0
-    val buffer = ByteBuffer.wrap(bytes, offset, length)
-    return  UUID(buffer.long, buffer.long)
 }
 
 private fun Double.isInteger(): Boolean {

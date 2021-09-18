@@ -25,7 +25,7 @@ class ShortUUIDTests {
     @Test
     fun testNotShortId() {
         assertThrows<IllegalArgumentException> {
-            "123456".fromShortId()
+            ShortUUID.from("123456")
         }
     }
 
@@ -33,10 +33,8 @@ class ShortUUIDTests {
     fun testShortIdWithDefaultCharacters() {
         val uuid = fromString("53e6693a-0aaa-4e94-a116-2a397fc89975")
         val shortId = uuid.shortId()
-        print(uuid.mostSignificantBits)
-        print(uuid.leastSignificantBits)
         assertEquals("1jVCAW2GFeBa4mazB-O9BR", shortId)
-        assertEquals(uuid, shortId.fromShortId())
+        assertEquals(uuid, ShortUUID.from(shortId))
     }
 
     @Test
@@ -45,6 +43,6 @@ class ShortUUIDTests {
         val uuid = fromString("fbcf8ca0-a0b7-4e8c-8a05-f0be7c72f022")
         val shortId = uuid.shortId(characters)
         assertEquals("7USX6A185P9T68L1FGPSX75V12", shortId)
-        assertEquals(uuid, shortId.fromShortId(characters))
+        assertEquals(uuid, ShortUUID.from(shortId, characters))
     }
 }
