@@ -10,7 +10,11 @@ class NamedUUID {
 
         @JvmStatic
         fun from(name: String, namespace: String = "", asV4: Boolean = false): UUID {
-            val fullName = "${name}${namespace}"
+            val hashedName = name.sha1()
+            val hashedNamespace = namespace.sha1()
+            val fullName = ByteArray(hashedName.size + hashedNamespace.size)
+            hashedName.copyInto(fullName)
+            hashedNamespace.copyInto(fullName, hashedName.size)
             var hashed = fullName.sha1()
             hashed.setVersionAndVariant(asV4)
             val buffer = ByteBuffer.wrap(hashed, 0, Long.SIZE_BYTES * 2)
@@ -21,8 +25,12 @@ class NamedUUID {
 
 private fun String.sha1(): ByteArray {
     val bytes = this.toByteArray()
+    return bytes.sha1()
+}
+
+private fun ByteArray.sha1(): ByteArray {
     val digest = MessageDigest.getInstance("SHA-1")
-    digest.update(bytes)
+    digest.update(this)
     return digest.digest()
 }
 

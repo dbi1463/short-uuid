@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test
 import java.util.UUID.randomUUID
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class NamedUUIDTests {
 
@@ -9,15 +10,15 @@ class NamedUUIDTests {
         val uuid = NamedUUID.from("abc@123.xyz")
         assertEquals(5, uuid.version())
         assertEquals(randomUUID().variant(), uuid.variant())
-        assertEquals("17597a5e-728f-57ed-90d9-e3b538059618", uuid.toString())
+        assertEquals("fadade9b-ff70-5be2-b4b3-e1be29e27511", uuid.toString())
     }
 
     @Test
     fun testUUIDWithNamespace() {
-        val uuid = NamedUUID.from("abc", "123.xyz")
+        val uuid = NamedUUID.from("abc", "@123.xyz")
         assertEquals(5, uuid.version())
         assertEquals(randomUUID().variant(), uuid.variant())
-        assertEquals("e0740ce6-9246-567f-bc47-6f95d2820ac7", uuid.toString())
+        assertEquals("cda47728-893f-5f74-b7ce-7bb1773ed34f", uuid.toString())
     }
 
     @Test
@@ -25,6 +26,13 @@ class NamedUUIDTests {
         val uuid = NamedUUID.from("abc@123.xyz", "", true)
         assertEquals(4, uuid.version())
         assertEquals(randomUUID().variant(), uuid.variant())
-        assertEquals("17597a5e-728f-47ed-90d9-e3b538059618", uuid.toString())
+        assertEquals("fadade9b-ff70-4be2-b4b3-e1be29e27511", uuid.toString())
+    }
+
+    @Test
+    fun testUUIDUniqueness() {
+        val uuid1 = NamedUUID.from("abc@123.xyz") // fadade9b-ff70-5be2-b4b3-e1be29e27511
+        val uuid2 = NamedUUID.from("abc", "@123.xyz") // cda47728-893f-5f74-b7ce-7bb1773ed34f
+        assertNotEquals(uuid1, uuid2)
     }
 }
